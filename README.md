@@ -11,3 +11,9 @@ REDIS_CLUSTER_NODE_1=""
 REDIS_CLUSTER_NODE_2=""
 FIREBASE_ADMIN_SDK=""
 FREEAPI_HOST_URL=""
+
+
+For Eslinit and pritter:-
+Step 1:- install extensions 
+Step 2:- we have npm mpn packages in packagelog
+Step 3:- debug for any issues is saving doesnt trigger formatting;
