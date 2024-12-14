@@ -57,3 +57,15 @@ export const deleteRecord = async <T>(
 ) => {
   return await db_calls.deleteRecord(model, query);
 };
+// can read,write,update delete through this pipeline too.(explore this)
+
+export const AggrigationPipeline=async <T>(AggrigationArray:[any],model:Mongoose.Model<T>)=>{
+    try {
+      const results = await model.aggregate(AggrigationArray);
+      console.log(results); 
+      return results;
+    } catch (error) {
+      console.error(error);
+    }
+  
+}
