@@ -1,0 +1,20 @@
+redis cloud               to be tested
+redis ratelimiter         to be tested
+fallback rate limiter     to be tested
+wilson loggers            to be tested
+redis bull eventQueue     to be tested with redisUpdate
+artilary                  for testing loads on specific apis end points
+fileuploads               to be tested
+api endpoints             to be tested
+joi- validation           to be tested
+mongoose                  to be tested
+jwt and bcrypt            tested 
+eslint                    tested
+prettier                  tested
+husky                     to be tested
+builds                    to be tested
+scripts                   to be implemented
+docker                    to be implemented
+push notification         to be implemented
+web socket                to be implemented
+swagger                   to be implemented
