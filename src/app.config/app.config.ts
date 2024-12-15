@@ -33,7 +33,8 @@ const server = http.createServer(app);
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 
-const file = fs.readFileSync(path.resolve(__dirname, "./swagger.yaml"), "utf8");
+
+const file = fs.readFileSync(path.resolve(`${process.cwd()}`, "./swagger.yaml"), "utf8");
 const swaggerDocument = YAML.parse(
   file?.replace(
     "- url: ${{server}}",
