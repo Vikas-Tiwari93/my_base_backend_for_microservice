@@ -14,14 +14,22 @@ if (memoryUsage.rss > 500 * 1024 * 1024) {
 }
 // application error
 process.on('uncaughtException', (error) => {
-  generalLogger.error('Uncaught Exception:', { stack: error.stack });
+  generalLogger.error(`Uncaught Exception:${error}`);
+  console.log(error)
+  generalLogger.end()
+  process.exit(1);
+
 });
 //unhandled Rejections
 process.on('unhandledRejection', (reason, promise) => {
-  generalLogger.error('Unhandled Rejection:', { reason, promise });
+  generalLogger.error(`Unhandled Rejection: ${{ reason, promise }}`);
+  console.log({ reason, promise })
+  generalLogger.end()
+  process.exit(1);
 });
 // Example log: Application Shutdown (on SIGINT)
 process.on('SIGINT', () => {
   generalLogger.info('Application is shutting down due to SIGINT signal.');
+  generalLogger.end()
   process.exit();
 });

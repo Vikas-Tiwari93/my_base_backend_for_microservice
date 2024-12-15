@@ -12,7 +12,7 @@ import { SERVER_ERROR } from '../../../utilities/constants/http-constants';
 import { deleteManyRecord } from '../../../utilities/db/dblayer';
 import { authLogger } from '../../../services/logs/loggerInstances';
 import OTPGenerator from 'otp-generator';
-import { encryptPassword } from 'utilities/other_utils/others';
+import { encryptPassword } from '../../../utilities/other_utils/others';
 type EmailRequest = {
   email: string;
 };

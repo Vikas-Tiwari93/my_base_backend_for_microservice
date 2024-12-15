@@ -1,0 +1,23 @@
+openapi: 3.0.0
+info:
+  title: Microservices API
+  description: A complete API guide to current Application APIs.
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+    description: Production Server
+  - url: http://localhost:3000/v1
+    description: Local Development Server
+
+paths:
+  /users:
+    $ref: './swagger_modules/paths/users.yaml'
+  /admin:
+    $ref: './swagger_modules/paths/admin.yaml'
+
+components:
+  schemas:
+    Resource:
+      $ref: './swagger_modules/schemas/Users.yaml'
+    ResourceInput:
+      $ref: './swagger_modules/schemas/Admin.yaml'
