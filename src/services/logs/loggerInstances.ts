@@ -1,5 +1,5 @@
 import { LogsServices, LogsTypes } from '../../utilities/constants/logs';
-import { createServiceLogger, generalLogger } from './logs.config';
+import { createServiceLogger, generalLogger } from '.';
 
 export const authLogger = createServiceLogger(LogsServices.AUTH, LogsTypes.INFO);
 export const userLogger = createServiceLogger(LogsServices.USER, LogsTypes.INFO);
@@ -14,15 +14,14 @@ if (memoryUsage.rss > 500 * 1024 * 1024) {
 }
 // application error
 process.on('uncaughtException', (error) => {
-    generalLogger.error('Uncaught Exception:', { stack: error.stack });
-  });
-  //unhandled Rejections
-  process.on('unhandledRejection', (reason, promise) => {
-    generalLogger.error('Unhandled Rejection:', { reason, promise });
-  });
-  // Example log: Application Shutdown (on SIGINT)
-  process.on('SIGINT', () => {
-    generalLogger.info('Application is shutting down due to SIGINT signal.');
-    process.exit();
-  });
-  
+  generalLogger.error('Uncaught Exception:', { stack: error.stack });
+});
+//unhandled Rejections
+process.on('unhandledRejection', (reason, promise) => {
+  generalLogger.error('Unhandled Rejection:', { reason, promise });
+});
+// Example log: Application Shutdown (on SIGINT)
+process.on('SIGINT', () => {
+  generalLogger.info('Application is shutting down due to SIGINT signal.');
+  process.exit();
+});

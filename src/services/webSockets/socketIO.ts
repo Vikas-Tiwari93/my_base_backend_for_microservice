@@ -3,9 +3,10 @@ import { ChangeStream } from 'mongodb';
 import mongoose from 'mongoose';
 import cookie from "cookie";
 import jwt from "jsonwebtoken";
-import { Users } from 'utilities/schemas/users';
-import { ChatEventEnum } from 'utilities/constants/enums';
-import { getRecordById } from 'utilities/db/dbwrapper';
+import { getRecordById } from '../../utilities/db/dbwrapper';
+import { Users } from '../../utilities/schemas/users';
+import { ChatEventEnum } from '../../utilities/constants/enums';
+
 
 interface CustomSocket extends Socket {
   user?: any;
@@ -21,38 +22,38 @@ class WebSocketService {
 
   constructor(io: SocketIOServer) {
     this.io = io;
-    this.io.on('connection', async (socket: CustomSocket)=> {
+    this.io.on('connection', async (socket: CustomSocket) => {
 
-      try{
-      const cookies = cookie.parse(socket.handshake.headers?.cookie || "");
-      let token = cookies?.accessToken;
-      if (!token) {
-        // If there is no access token in cookies. Check inside the handshake auth
-        token = socket.handshake.auth?.token;
-      }
-      if (!token) {
-        throw new Error( "Un-authorized handshake. Token is missing");
-      }
-      const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as DecodedToken;
-     const decodedId= decodedToken._id||""
-      const user =  (await getRecordById(Users,{_id:decodedId})).resultSet; 
-      // find the user by token
-      if (!user) {
-        throw new Error( "Un-authorized handshake. Token is invalid");
-      }
-      socket.user = user ;
-      socket.join(user._id.toString());
-      socket.emit(ChatEventEnum.CONNECTED_EVENT,"conected to the server");
-      console.log("User connected 🗼. userId: ", user._id.toString());
-      socket.on(ChatEventEnum.DISCONNECT_EVENT, () => {
-        console.log("user has disconnected 🚫. userId: " + socket.user?._id);
-        if (socket.user?._id) {
-          socket.leave(socket.user._id);
+      try {
+        const cookies = cookie.parse(socket.handshake.headers?.cookie || "");
+        let token = cookies?.accessToken;
+        if (!token) {
+          // If there is no access token in cookies. Check inside the handshake auth
+          token = socket.handshake.auth?.token;
         }
-       
-      });
-      // see if other Events can fit in here.
-    }
+        if (!token) {
+          throw new Error("Un-authorized handshake. Token is missing");
+        }
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as DecodedToken;
+        const decodedId = decodedToken._id || ""
+        const user = (await getRecordById(Users, { _id: decodedId })).resultSet;
+        // find the user by token
+        if (!user) {
+          throw new Error("Un-authorized handshake. Token is invalid");
+        }
+        socket.user = user;
+        socket.join(user._id.toString());
+        socket.emit(ChatEventEnum.CONNECTED_EVENT, "conected to the server");
+        console.log("User connected 🗼. userId: ", user._id.toString());
+        socket.on(ChatEventEnum.DISCONNECT_EVENT, () => {
+          console.log("user has disconnected 🚫. userId: " + socket.user?._id);
+          if (socket.user?._id) {
+            socket.leave(socket.user._id);
+          }
+
+        });
+        // see if other Events can fit in here.
+      }
       catch (error) {
         socket.emit(
           ChatEventEnum.SOCKET_ERROR_EVENT,

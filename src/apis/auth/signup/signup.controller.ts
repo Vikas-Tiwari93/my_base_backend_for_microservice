@@ -12,7 +12,7 @@ import { getRecordDetails } from '../../../utilities/db/dbwrapper';
 import { generateJwtTokens } from '../../../utilities/tokenGenerators/jwt';
 import { handleImageUpload } from '../../../services/uploadsDownloads/imageUpload/image';
 import { uploadDirPath } from '../../../utilities/initialservices/initialServices';
-import { encryptPassword } from '../../../utilities/otherMiddlewares/authMiddleware';
+// import { encryptPassword } from '../../../utilities/otherMiddlewares/authMiddleware';
 import { Users } from '../../../utilities/schemas/users';
 import { createSingleRecordWithTransactions } from '../../../utilities/transactions/dblayer';
 import { executeOperationsInTransaction } from '../../../utilities/transactions/transations.methods';
@@ -42,7 +42,7 @@ export const SignupControllerAdmin = async (
     email,
     name,
     userName,
-    password: await encryptPassword(password),
+    // password: await encryptPassword(password),
     role: 'admin',
     attachment,
     isActive: true,

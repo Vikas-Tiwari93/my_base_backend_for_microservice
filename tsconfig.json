@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "module": "es2022",
+ "module": "CommonJS",   // This enables top-level await and modern module syntax
+    "target": "ES2022",
     "outDir": "./dist",
     "rootDir": "./src",
     "sourceMap": true,
@@ -9,7 +9,9 @@
     "skipLibCheck": true,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "./src"
+    
+    "esModuleInterop": true
   },
-  "include": ["./src"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

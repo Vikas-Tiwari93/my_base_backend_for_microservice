@@ -8,13 +8,13 @@ import {
 import { ExpirationType } from './redis.types';
 import { gzip, gunzip } from 'zlib';
 import { promisify } from 'util';
-import { generalLogger } from 'services/logs/logs.config';
-import { cacheLogger } from 'services/logs/loggerInstances';
-import { getRecords } from 'utilities/db/dbwrapper';
-import { Users } from 'utilities/schemas/users';
-import { Model } from 'mongoose';
+import { cacheLogger } from '../logs/loggerInstances';
+import { getRecords } from '../../utilities/db/dbwrapper';
+import { generalLogger } from '../logs';
+
 // security config required and error
-export async function createRedisClient () {
+export let redisClientStore: any
+export async function createRedisClient() {
   let redisClient: any;
 
   if (process.env.USE_REDIS_CLUSTER === 'true') {
@@ -27,12 +27,12 @@ export async function createRedisClient () {
       useReplicas: true,
     });
 
-   await redisClient.on('error', (_err: string) => {
+    await redisClient.on('error', (_err: string) => {
       generalLogger.error(`redis error ${_err}`);
     });
-   await redisClient.on('connect', () => {
+    await redisClient.on('connect', () => {
       generalLogger.info('Connected to Redis Cloud');
-  });
+    });
   } else {
     // Create Single Redis Client
     redisClient = createClient({
@@ -48,13 +48,13 @@ export async function createRedisClient () {
     });
     redisClient.on('connect', () => {
       generalLogger.info('Connected to Redis Cloud');
-  });
+    });
   }
 
   await redisClient.connect();
-  return redisClient;
+  redisClientStore = redisClient;
 }
-export const redisClient = await createRedisClient();
+
 
 //compress Data for Storage and retrival
 
@@ -62,22 +62,26 @@ const gzipAsync = promisify(gzip);
 const gunzipAsync = promisify(gunzip);
 
 async function compressedData(data: any) {
-try{  const compressedData = await gzipAsync(JSON.stringify(data))
-  return compressedData;}
-  catch(err){
+  try {
+    const compressedData = await gzipAsync(JSON.stringify(data))
+    return compressedData;
+  }
+  catch (err) {
     logCacheError(err)
     throw err
   }
 }
 async function deCompressedCache(key: string) {
- try { const compressedData = await redisClient.getBuffer(key);
-  if (compressedData) {
-    const data = await gunzipAsync(compressedData);
-      const decompressedData=data.toString();
-     return JSON.parse(decompressedData)
+  try {
+    const compressedData = await redisClientStore.getBuffer(key);
+    if (compressedData) {
+      const data = await gunzipAsync(compressedData);
+      const decompressedData = data.toString();
+      return JSON.parse(decompressedData)
+    }
+    return '';
   }
-  return '';}
-  catch(err){
+  catch (err) {
     logCacheError(err)
     throw err;
   }
@@ -124,31 +128,31 @@ export async function getCachedDataWithPolicy(key: any) {
 }
 
 
-export async function updateCacheData(key: string, newData: any, expirationType:string) {
+export async function updateCacheData(key: string, newData: any, expirationType: string) {
 
-  try{
+  try {
     const expirationTime = expirationTimeCache(expirationType);
-    const stringifiesData= await compressedData(newData)
-    await redisClient.set(key,JSON.stringify(stringifiesData),{ EX: expirationTime });
+    const stringifiesData = await compressedData(newData)
+    await redisClientStore.set(key, JSON.stringify(stringifiesData), { EX: expirationTime });
 
   }
-  catch(err){
+  catch (err) {
     throw err
   }
 }
 // Invalidate the cache by updating
 export async function invalidateCache(key: string) {
-  await redisClient.del(key);
+  await redisClientStore.del(key);
 }
 
 
 // Cache Warming / Priming if needed after initial start
 // this is just for example it can be anything.
 export async function cacheWarmup() {
-  const frequentlyAccessedKeys = [{keyRedis:"user_data",modelSchema : modelMapping.user_data}];
+  const frequentlyAccessedKeys = [{ keyRedis: "user_data", modelSchema: modelMapping.user_data }];
   for (const key of frequentlyAccessedKeys) {
-    const data = await getRecords(key.modelSchema,{});
-    await redisClient.set(key.keyRedis, data, {
+    const data = await getRecords(key.modelSchema, {});
+    await redisClientStore.set(key.keyRedis, data, {
       EX: 3 * 24 * 60 * 60, // data which doesnt change rapidly
     });
   }

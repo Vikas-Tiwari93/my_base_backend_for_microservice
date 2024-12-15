@@ -1,4 +1,4 @@
-import { ChangeType } from "utilities/constants/types";
+import { ChangeType } from "../constants/types";
 
 export const handleUserInsert = (change: ChangeType, tableName: string) => {
 

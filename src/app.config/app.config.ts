@@ -7,28 +7,31 @@ import requestIp from "request-ip";
 import WebSocketService, { TableWatcher } from '../services/webSockets/socketIO';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { redisRateLimiter } from 'utilities/otherMiddlewares/rateLimiter';
-import { imageUploadConfig } from 'services/uploadsDownloads/imageUpload/image';
-import { serverAdapterQueue, serverAdapterScheduledJobs } from 'services/jobs/initialise';
-import { AuthRouter } from 'apis/auth/auth.router';
+
 import swaggerUi from "swagger-ui-express";
 import path from 'path';
 import fs from "fs";
 import { fileURLToPath } from "url";
 import YAML from "yaml";
-import { avoidInProduction } from 'utilities/otherMiddlewares/authMiddleware';
-import { dbInstance } from 'utilities/db';
-import { DB_LIST } from 'utilities/constants/enums';
-import { generalLogger } from 'services/logs/logs.config';
-import { SERVER_ERROR } from 'utilities/constants/http-constants';
+import { redisRateLimiter } from '../utilities/otherMiddlewares/rateLimiter';
+import { imageUploadConfig } from '../services/uploadsDownloads/imageUpload/image';
+import { serverAdapterQueue, serverAdapterScheduledJobs } from '../services/jobs/initialise';
+import { DB_LIST } from '../utilities/constants/enums';
+import { avoidInProduction } from '../utilities/otherMiddlewares/authMiddleware';
+import { dbInstance } from '../utilities/db';
+import { generalLogger } from '../services/logs';
+import { SERVER_ERROR } from '../utilities/constants/http-constants';
+import { AuthRouter } from '../apis/auth/auth.router';
 
 
- const app = express();
- const server = http.createServer(app);
+
+const app = express();
+const server = http.createServer(app);
 
 //swagger documentation
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 const file = fs.readFileSync(path.resolve(__dirname, "./swagger.yaml"), "utf8");
 const swaggerDocument = YAML.parse(
@@ -55,7 +58,8 @@ export const io = new SocketIOServer(server, {
   cors: {
     origin: process.env.CORS_ORIGIN,
     credentials: true,
-  }});
+  }
+});
 export const webSocketService = new WebSocketService(io);
 webSocketService.notifyClients(
   'notification',
@@ -91,7 +95,7 @@ app.use('/notifications', AuthRouter);
 
 // ! 🚫 Danger Zone to empty the DB for development
 // It needs more development dont touch.
-app.delete(`/api/reset-db/${DB_LIST.DB1}`, avoidInProduction, async (req:Request, res:Response) => {
+app.delete(`/api/reset-db/${DB_LIST.DB1}`, avoidInProduction, async (req: Request, res: Response) => {
   if (dbInstance) {
     await dbInstance.connection.db.dropDatabase({
       dbName: DB_LIST.DB1,
@@ -116,10 +120,10 @@ app.delete(`/api/reset-db/${DB_LIST.DB1}`, avoidInProduction, async (req:Request
     });
     return res
       .status(200)
-      .send(( "Database dropped successfully"));
+      .send(("Database dropped successfully"));
   }
- res.status(SERVER_ERROR)
-  .send(( "Something went wrong while dropping the database"));
+  res.status(SERVER_ERROR)
+    .send(("Something went wrong while dropping the database"));
   throw new Error;
 });
 export { server };

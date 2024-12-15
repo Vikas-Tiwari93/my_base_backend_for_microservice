@@ -1,5 +1,5 @@
 
-import { dbInit, watchHandlerControllers } from './utilities/db';
+import { dbInit } from './utilities/db';
 
 
 import { initalServicesInit } from './utilities/initialservices/initialServices';
@@ -8,19 +8,14 @@ import { dbUrl, port } from './app.config/env.config';
 
 
 import { server } from './app.config/app.config';
-import { generalLogger } from 'services/logs/logs.config';
-import { DB_LIST } from 'utilities/constants/enums';
+import { DB_LIST } from './utilities/constants/enums';
+import { generalLogger } from './services/logs';
+import { createRedisClient } from './services/redis/redis.config';
 
 //establishing connection
-const watchHandlersAray = await dbInit(dbUrl, DB_LIST.DB1);
+dbInit(dbUrl, DB_LIST.DB1);
 // MongoDB connection started
-
-
-// tablewatcher initiating with help of MongoDB streams.
-// note MongoTable watcher is to implement heavy BRs only.
-// for client facing use use websockets to notice table changes.
-watchHandlerControllers(watchHandlersAray)
-
+createRedisClient()
 
 initalServicesInit();
 //intial services started

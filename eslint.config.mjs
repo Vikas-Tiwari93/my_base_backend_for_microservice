@@ -21,6 +21,7 @@ export default [
     rules: {
       'no-console': 'warn',
       eqeqeq: ['error', 'always'],
+      "@typescript-eslint/no-var-requires": "error",
       curly: ['error', 'all'],
       semi: ['error', 'always'],
       'no-process-env': 'off',

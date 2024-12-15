@@ -10,7 +10,7 @@ import {
 } from '../../../utilities/tokenGenerators/jwt';
 import { Users } from '../../../utilities/schemas/users';
 import { authLogger } from '../../../services/logs/loggerInstances';
-import { generalLogger } from 'services/logs/logs.config';
+import { generalLogger } from 'services/logs';
 import { isPasswordVerified } from 'utilities/other_utils/others';
 
 export const SigninController = async (
