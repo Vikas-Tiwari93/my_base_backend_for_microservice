@@ -46,7 +46,7 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerDocument, {
     swaggerOptions: {
-      docExpansion: "none", // keep all the sections collapsed by default
+      docExpansion: "none",
     },
     customSiteTitle: "API docs",
   })

@@ -35,12 +35,14 @@ export const watchHandlerControllers = (watchHandlersArray: ObjectWatchType[]) =
 export const dbInit = async (dbUrl: string, database: string) => {
   try {
     const watchHandlersAray: ObjectWatchType[] = [];
+    console.log(dbUrl)
     const dbInstance = await mongoose.connect(dbUrl, {
       dbName: database,
       readPreference: "secondary"
     });
-    const nativeDb = mongoose.connection.db
     console.log(`Successfully connected to the database: ${database}`);
+    const nativeDb = mongoose.connection.db
+
     let collections = await nativeDb.listCollections().toArray();
     //if collections=0; must initialise all collections;
     if (!collections.length) {
@@ -59,7 +61,7 @@ export const dbInit = async (dbUrl: string, database: string) => {
             },
           },
         ];
-        let changeStream = nativeDb.collection("users").watch(pipeline);
+        let changeStream = nativeDb.collection(tableName).watch(pipeline);
         const handlerName = `${tableName}-change_stream`
         const handlerObj: ObjectWatchType = {}
         handlerObj[handlerName] = changeStream;
@@ -72,6 +74,7 @@ export const dbInit = async (dbUrl: string, database: string) => {
     // for client facing use use websockets to notice table changes.
     watchHandlerControllers(watchHandlersAray)
   } catch (err) {
+    console.log(err)
     generalLogger.error('Database Connection Error:', { message: err.message, stack: err.stack });
     process.exit(1); // Exit process if the connection fails
   }

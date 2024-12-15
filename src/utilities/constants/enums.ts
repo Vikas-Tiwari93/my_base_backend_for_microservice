@@ -47,8 +47,8 @@ export const ChatEventEnum = Object.freeze({
 });
 
 export const DB_LIST = {
-  DB1: "",
-  DB2: ""
+  DB1: "service1",
+  DB2: "main_application"
 }
 
 export const tableWatchConstants: TableWatchType = [{

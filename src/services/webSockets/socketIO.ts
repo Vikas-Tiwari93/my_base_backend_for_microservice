@@ -92,39 +92,53 @@ export class TableWatcher {
     }
   }
 
-  private watchChanges() {
-    const watchTables = ['users'];
+  private ensureDatabaseConnected(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (mongoose.connection.readyState === 1) {
+        // Ready state 1: connected
+        resolve();
+      } else {
+        mongoose.connection.once('connected', resolve);
+        mongoose.connection.once('error', reject);
+      }
+    });
+  }
 
-    watchTables.forEach((collection) => {
-      const tableCollection = mongoose.connection.collection(collection);
-      this.changeStream = tableCollection.watch();
-      this.changeStream.on('change', (change) => {
-        if (change.operationType === 'insert') {
-          const document = change.fullDocument;
-          const sysId = document.sysId;
-          const eventName = `${collection}-inserted-${sysId}`;
-          this.webSocketService.onTableChangeNotifyClient(
-            eventName,
-            JSON.stringify(document)
-          );
-        } else if (change.operationType === 'delete') {
-          const document = change.fullDocumentBeforeChange;
-          const sysId = document?.sysId;
-          const eventName = `${collection}-deleted-${sysId}`;
-          this.webSocketService.onTableChangeNotifyClient(
-            eventName,
-            JSON.stringify(document)
-          );
-        } else if (change.operationType === 'update') {
-          const document = change.fullDocument;
-          const sysId = document?.sysId;
-          const eventName = `${collection}-updated-${sysId}`;
-          this.webSocketService.onTableChangeNotifyClient(
-            eventName,
-            JSON.stringify(document)
-          );
-        }
-      });
+  private async watchChanges() {
+    await this.ensureDatabaseConnected()
+    const watchTablesWebSockets = ['users'];
+    watchTablesWebSockets.forEach((collection: string) => {
+      const tableCollection = mongoose.connection.db.collection(collection || "");
+      if (tableCollection) {
+        this.changeStream = tableCollection.watch();
+        this.changeStream.on('change', (change) => {
+          if (change.operationType === 'insert') {
+            const document = change.fullDocument;
+            const sysId = document.sysId;
+            const eventName = `${collection}-inserted-${sysId}-record`;
+            this.webSocketService.onTableChangeNotifyClient(
+              eventName,
+              JSON.stringify(document)
+            );
+          } else if (change.operationType === 'delete') {
+            const document = change.fullDocumentBeforeChange;
+            const sysId = document?.sysId;
+            const eventName = `${collection}-deleted-${sysId}-record`;
+            this.webSocketService.onTableChangeNotifyClient(
+              eventName,
+              JSON.stringify(document)
+            );
+          } else if (change.operationType === 'update') {
+            const document = change.fullDocument;
+            const sysId = document?.sysId;
+            const eventName = `${collection}-updated-${sysId}-record`;
+            this.webSocketService.onTableChangeNotifyClient(
+              eventName,
+              JSON.stringify(document)
+            );
+          }
+        });
+      }
 
       this.changeStream.on('error', (err) => {
         console.error('Error watching changes:', err);
