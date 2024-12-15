@@ -5,7 +5,6 @@ import {
   modelMapping,
   SHORT_LIVED,
 } from '../../utilities/constants/redis';
-import { ExpirationType } from './redis.types';
 import { gzip, gunzip } from 'zlib';
 import { promisify } from 'util';
 import { cacheLogger } from '../logs/loggerInstances';
@@ -15,6 +14,7 @@ import { generalLogger } from '../logs';
 // security config required and error
 export let redisClientStore: any
 export async function createRedisClient() {
+
   let redisClient: any;
 
   if (process.env.USE_REDIS_CLUSTER === 'true') {
@@ -36,14 +36,18 @@ export async function createRedisClient() {
   } else {
     // Create Single Redis Client
     redisClient = createClient({
-      url: process.env.REDIS_URL,
       socket: {
-        tls: process.env.REDIS_USE_TLS === 'true',
-        rejectUnauthorized: process.env.REDIS_REJECT_UNAUTHORIZED === 'true',
+        host: 'redis-11214.c264.ap-south-1-1.ec2.redns.redis-cloud.com',
+        port: 11214,
+        tls: false,
+        // rejectUnauthorized: false,
       },
+      username: 'default',
+      password: '7PIYiPkMhNiGgyAAymXl3S4hw1hILOpm',
     });
 
     redisClient.on('error', (_err: string) => {
+      console.log(_err);
       generalLogger.error(`redis error ${_err}`);
     });
     redisClient.on('connect', () => {

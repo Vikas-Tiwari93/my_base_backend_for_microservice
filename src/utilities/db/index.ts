@@ -35,7 +35,6 @@ export const watchHandlerControllers = (watchHandlersArray: ObjectWatchType[]) =
 export const dbInit = async (dbUrl: string, database: string) => {
   try {
     const watchHandlersAray: ObjectWatchType[] = [];
-    console.log(dbUrl)
     const dbInstance = await mongoose.connect(dbUrl, {
       dbName: database,
       readPreference: "secondary"
@@ -70,7 +69,7 @@ export const dbInit = async (dbUrl: string, database: string) => {
     })
 
     // tablewatcher initiating with help of MongoDB streams.
-    // note MongoTable watcher is to implement heavy BRs only.
+    // note MongoTable watcher is to implement heavy BRs only specially Async BR and event Queue.
     // for client facing use use websockets to notice table changes.
     watchHandlerControllers(watchHandlersAray)
   } catch (err) {
