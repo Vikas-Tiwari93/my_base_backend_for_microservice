@@ -11,7 +11,7 @@ const endpointLimits: { [key: string]: number } = {
   '/auth/signin/': 100,
   '/api/signup/': 50,
 };
-const tempExpirationtime = 2 * 60 * 60
+const tempExpirationtime = 2 * 60 * 60;
 async function tempBlacklistIp(ip: string): Promise<void> {
   await redisClientStore.sadd(iPListing.blacklist, ip);
 
@@ -39,11 +39,11 @@ const fallbackRateLimiter = rateLimit({
 const isRedisOnline = async () => {
   const isRedisOnline = await redisClientStore.ping();
   if (!isRedisOnline) {
-    return false
+    return false;
   }
-  return true
+  return true;
 
-}
+};
 
 
 export async function redisRateLimiter(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -56,7 +56,7 @@ export async function redisRateLimiter(req: Request, res: Response, next: NextFu
     return;
   }
   if (await isWhitelisted(ip)) {
-    next()
+    next();
   }
   try {
     const current = await redisClientStore.incr(rateLimitKey);
@@ -75,13 +75,13 @@ export async function redisRateLimiter(req: Request, res: Response, next: NextFu
     next();
   } catch (error) {
     cacheLogger.error(`Rate limitter not running, endpoint might crash ${error}`);
-    generalLogger.error(`Rate limitter not running, endpoint might crash ${error}`)
+    generalLogger.error(`Rate limitter not running, endpoint might crash ${error}`);
     //  here either a fallback for ratelimiting required error will crash the apis.
     if (!isRedisOnline()) {
       fallbackRateLimiter(req, res, next);
     }
     else {
-      throw error
+      throw error;
     }
   }
 }

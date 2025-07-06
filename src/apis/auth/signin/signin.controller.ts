@@ -36,7 +36,7 @@ export const SigninController = async (
       (await isPasswordVerified(password, user?.resultSet?.password))
     ) {
       authLogger.info('i am in');
-      return res.status(200).json({
+      res.status(200).json({
         isAdmin: user?.resultSet.isAdmin,
         authToken,
         refreshToken,
@@ -44,7 +44,7 @@ export const SigninController = async (
       });
     }
     generalLogger.warn(`Unauthorized login attempt detected from IP: ${req.ip}`);
-    return res.status(404).json({ message: 'Invalid Credentials' });
+    res.status(404).json({ message: 'Invalid Credentials' });
   } catch (error) {
     authLogger.error('login failed');
     res.status(SERVER_ERROR).json({ msg: 'Error signing in user', error });
@@ -62,7 +62,7 @@ export const generateAuthTokenController = async (
       const identifyUser = await getRecordDetails(Users, querypayload);
 
       if (!identifyUser) {
-        return res.status(404).send('User not found');
+        res.status(404).send('User not found');
       }
       const { authToken, refreshToken } = generateJwtTokens(user);
 
@@ -72,7 +72,7 @@ export const generateAuthTokenController = async (
         .status(200)
         .send({ authToken, refreshToken, message: 'authToken sent' });
 
-      return res.status(404).send('Refresh token expired');
+      res.status(404).send('Refresh token expired');
     }
   } catch (error) {
     res.status(403).send(error);

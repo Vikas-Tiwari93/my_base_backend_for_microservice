@@ -68,4 +68,4 @@ export const AggrigationPipeline=async <T>(AggrigationArray:[any],model:Mongoose
       console.error(error);
     }
   
-}
+};

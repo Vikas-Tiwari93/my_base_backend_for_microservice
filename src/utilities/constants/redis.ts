@@ -11,4 +11,4 @@ export const modelMapping: Record<string, Model<any>> = {
 export const iPListing = {
   whiteList: "whitelist",
   blacklist: "blacklist"
-}
+};

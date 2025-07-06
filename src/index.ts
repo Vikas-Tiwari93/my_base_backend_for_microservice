@@ -11,16 +11,15 @@ import { server } from './app.config/app.config';
 import { DB_LIST } from './utilities/constants/enums';
 import { generalLogger } from './services/logs';
 import { createRedisClient } from './services/redis/redis.config';
-console.log(`Server is running on port `)
 //establishing connection
 dbInit(dbUrl, DB_LIST.DB1);
-// MongoDB connection started
-createRedisClient()
+// MongoDB connection startedf
+createRedisClient();
 
 initalServicesInit();
 //intial services started
 
-server.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
+server.on('listening', () => {
+  console.log(`Server is running on port ${port}`);
   generalLogger.info(`Server is running on port ${port}`);
 });

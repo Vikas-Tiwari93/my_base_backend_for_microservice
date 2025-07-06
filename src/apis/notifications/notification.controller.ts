@@ -10,7 +10,7 @@ export const PushNotificationController = async (
   try {
     const { token, title, body } = req.body;
     if (!token || !title || !body) {
-      return res.status(400).send('Token, title, and body are required');
+      res.status(400).send('Token, title, and body are required');
     }
 
     await notificationQueue.add({ token, title, body });

@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import { LogsServices, LogsTypes } from '../constants/logs';
-// eslint-disable-next-line no-undef
+ 
 export const uploadDirPath = `${process.cwd()}/uploads/`;
-// eslint-disable-next-line no-undef
+ 
 export const logsDrPath = `${process.cwd()}/logs/`;
 const logFilesType = LogsTypes;
 const logsServices = LogsServices;

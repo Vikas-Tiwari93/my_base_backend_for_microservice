@@ -1,1 +1,1 @@
-version use node 20.16
+version use node 22 as it is LTS

@@ -1,5 +1,4 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { ChangeStream } from 'mongodb';
 import mongoose from 'mongoose';
 import cookie from "cookie";
 import jwt from "jsonwebtoken";
@@ -35,7 +34,7 @@ class WebSocketService {
           throw new Error("Un-authorized handshake. Token is missing");
         }
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as DecodedToken;
-        const decodedId = decodedToken._id || ""
+        const decodedId = decodedToken._id || "";
         const user = (await getRecordById(Users, { _id: decodedId })).resultSet;
         // find the user by token
         if (!user) {
@@ -44,9 +43,9 @@ class WebSocketService {
         socket.user = user;
         socket.join(user._id.toString());
         socket.emit(ChatEventEnum.CONNECTED_EVENT, "conected to the server");
-        console.log("User connected 🗼. userId: ", user._id.toString());
+        console.log("User connected with userId: ", user._id.toString());
         socket.on(ChatEventEnum.DISCONNECT_EVENT, () => {
-          console.log("user has disconnected 🚫. userId: " + socket.user?._id);
+          console.log("user has disconnected, userId: " + socket.user?._id);
           if (socket.user?._id) {
             socket.leave(socket.user._id);
           }
@@ -78,7 +77,7 @@ class WebSocketService {
 }
 // use to sense any change in given tablesjust as a notification for refresh
 export class TableWatcher {
-  private changeStream: ChangeStream;
+  private changeStream: any;
   private webSocketService: WebSocketService;
 
   constructor(webSocketService: WebSocketService) {
@@ -105,7 +104,7 @@ export class TableWatcher {
   }
 
   private async watchChanges() {
-    await this.ensureDatabaseConnected()
+    await this.ensureDatabaseConnected();
     const watchTablesWebSockets = ['users'];
     watchTablesWebSockets.forEach((collection: string) => {
       const tableCollection = mongoose.connection.db.collection(collection || "");

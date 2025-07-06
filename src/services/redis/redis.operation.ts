@@ -1,4 +1,4 @@
-import { redisClient } from './redis.config';
+import { redisClientStore as redisClient } from './redis.config';
 
 export const getAllFromRedis = async (_query: string, _schema: string) => {
   try {

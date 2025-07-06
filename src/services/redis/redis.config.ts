@@ -12,7 +12,7 @@ import { getRecords } from '../../utilities/db/dbwrapper';
 import { generalLogger } from '../logs';
 
 // security config required and error
-export let redisClientStore: any
+export let redisClientStore: any;
 export async function createRedisClient() {
 
   let redisClient: any;
@@ -67,12 +67,12 @@ const gunzipAsync = promisify(gunzip);
 
 async function compressedData(data: any) {
   try {
-    const compressedData = await gzipAsync(JSON.stringify(data))
+    const compressedData = await gzipAsync(JSON.stringify(data));
     return compressedData;
   }
   catch (err) {
-    logCacheError(err)
-    throw err
+    logCacheError(err);
+    throw err;
   }
 }
 async function deCompressedCache(key: string) {
@@ -81,12 +81,12 @@ async function deCompressedCache(key: string) {
     if (compressedData) {
       const data = await gunzipAsync(compressedData);
       const decompressedData = data.toString();
-      return JSON.parse(decompressedData)
+      return JSON.parse(decompressedData);
     }
     return '';
   }
   catch (err) {
-    logCacheError(err)
+    logCacheError(err);
     throw err;
   }
 }
@@ -96,10 +96,10 @@ async function deCompressedCache(key: string) {
 // }
 
 function logCacheMiss(_key: string) {
-  cacheLogger.info(`cache miss for ${_key}`)
+  cacheLogger.info(`cache miss for ${_key}`);
 }
 function logCacheError(_error: string) {
-  cacheLogger.error(`cache error for ${_error}`)
+  cacheLogger.error(`cache error for ${_error}`);
 }
 export const expirationTimeCache = (type?: string) => {
   let expirationTime: number;
@@ -133,16 +133,10 @@ export async function getCachedDataWithPolicy(key: any) {
 
 
 export async function updateCacheData(key: string, newData: any, expirationType: string) {
+  const expirationTime = expirationTimeCache(expirationType);
+  const stringifiesData = await compressedData(newData);
+  await redisClientStore.set(key, JSON.stringify(stringifiesData), { EX: expirationTime });
 
-  try {
-    const expirationTime = expirationTimeCache(expirationType);
-    const stringifiesData = await compressedData(newData)
-    await redisClientStore.set(key, JSON.stringify(stringifiesData), { EX: expirationTime });
-
-  }
-  catch (err) {
-    throw err
-  }
 }
 // Invalidate the cache by updating
 export async function invalidateCache(key: string) {

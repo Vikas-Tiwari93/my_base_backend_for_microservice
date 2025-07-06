@@ -11,7 +11,6 @@ import bodyParser from 'body-parser';
 import swaggerUi from "swagger-ui-express";
 import path from 'path';
 import fs from "fs";
-import { fileURLToPath } from "url";
 import YAML from "yaml";
 import { redisRateLimiter } from '../utilities/otherMiddlewares/rateLimiter';
 import { imageUploadConfig } from '../services/uploadsDownloads/imageUpload/image';
@@ -26,7 +25,7 @@ import { AuthRouter } from '../apis/auth/auth.router';
 
 
 const app = express();
-const server = http.createServer(app);
+const server: http.Server = http.createServer(app);
 
 //swagger documentation
 
@@ -97,6 +96,7 @@ app.use('/notifications', AuthRouter);
 // ! 🚫 Danger Zone to empty the DB for development
 // It needs more development dont touch.
 app.delete(`/api/reset-db/${DB_LIST.DB1}`, avoidInProduction, async (req: Request, res: Response) => {
+
   if (dbInstance) {
     await dbInstance.connection.db.dropDatabase({
       dbName: DB_LIST.DB1,
@@ -108,18 +108,18 @@ app.delete(`/api/reset-db/${DB_LIST.DB1}`, avoidInProduction, async (req: Reques
         //dont stop server
       } else {
         for (const file of files) {
-          if (file === ".gitkeep") continue;
+          if (file === ".gitkeep") { continue; };
           fs.unlink(path.join(directory, file), (err) => {
-            if (err) throw err;
+            if (err) { throw err; }
           });
         }
       }
     });
     // remove the seeded users if exist
     fs.unlink("./public/temp/seed-credentials.json", (err) => {
-      if (err) generalLogger.error("Seed credentials are missing.");
+      if (err) { generalLogger.error("Seed credentials are missing."); }
     });
-    return res
+    res
       .status(200)
       .send(("Database dropped successfully"));
   }

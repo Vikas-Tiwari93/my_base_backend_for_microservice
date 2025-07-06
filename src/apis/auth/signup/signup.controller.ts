@@ -24,7 +24,6 @@ export const SignupControllerAdmin = async (
   const {
     firstName,
     lastName,
-    password,
     organisationName,
     organisationId,
     email,
